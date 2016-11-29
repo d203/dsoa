@@ -3,7 +3,7 @@ from flask import Flask,request,session,g,redirect,url_for,abort,\
 import os
 import json
 
-app=Flask(__name__)
+app=Flask (__name__)
 
 @app.route('/requestTask',methods=['POST'])
 def requestTask():
@@ -11,8 +11,13 @@ def requestTask():
 
     return ''
 
+@app.route('/addService',methods=['POST'])
+def addService():
+    info=request.get_json()
+    service
+
 @app.route('/')
-def show_entries():
+def show_list():
     entries=db.get_entries()
     for e in entries:
         print 'title is:' +e.title+' text is:' +e.row+'/n'
