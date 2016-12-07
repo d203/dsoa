@@ -12,3 +12,5 @@ fileCacheId 需要使用的文件缓存id
 
 ##servicePeer.py
 **服务节点主程序**
+##redisco
+redisco 
