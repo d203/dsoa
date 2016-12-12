@@ -2,7 +2,7 @@ from flask import Flask,request,session,g,redirect,url_for,abort,\
     render_template,flash
 import os
 import json
-from Service import Service
+from model.Service import Service
 
 app=Flask (__name__)
 
@@ -14,6 +14,7 @@ def requestTask():
 @app.route('/addService',methods=['POST'])
 def addService():
     info=request.json
+    info['serviceIP']=request.remote_addr
     print info
     service=Service()
     service.setFromjson(info)

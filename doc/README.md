@@ -10,7 +10,10 @@ paramList 变量名列表
 paramValue 请求变量
 fileCacheId 需要使用的文件缓存id
 
+##ServiceInformation
+s
 ##servicePeer.py
+
 **服务节点主程序**
 ##redisco
-redisco 
+redisco

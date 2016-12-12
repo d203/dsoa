@@ -1,3 +1,4 @@
+
 import uuid as UUID
 import json
 from redisco import models
@@ -7,11 +8,14 @@ class Service(models.Model):
     IP=models.Attribute()
     uuid=models.Attribute()
     load=models.IntegerField()
+    calcAbility=models.FloatField()
+
     def setFromjson(self,jsonDict):
         print jsonDict
         self.name=jsonDict['serviceName']
         self.IP=jsonDict['serviceIP']
         self.load=jsonDict['load']
+        self.calcAbility=jsonDict['calcAbility']
     def setDebugger(self,debugger):
         self.debugger=debugger
         self.debugger(self.name+': debugger has been set')
