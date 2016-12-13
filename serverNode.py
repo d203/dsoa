@@ -3,6 +3,7 @@ from flask import Flask,request,session,g,redirect,url_for,abort,\
 import os
 import json
 import redis
+import uuid as UUID
 from model.Service import Service
 from multiprocessing import Process
 from flask import send_from_directory
@@ -44,6 +45,7 @@ def taskRequest():
     requestInfo=request.json
     service=Service.objects.filter(name=requestInfo['serviceName'])[-1]
     requestInfo['serviceUUID']=service.uuid
+    requestInfo['taskID']=str(UUID.uuid1())
     r.publish(task_channel,json.dumps(requestInfo))
     return ''
 

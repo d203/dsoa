@@ -6,6 +6,8 @@ from multiprocessing import Process
 from model.Service import Service
 import redis
 import logging
+import os
+import tarfile
 
 #init param
 def set_debug():
@@ -20,7 +22,7 @@ def set_debug():
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-ip="http://127.0.0.1:8080/service"
+ip="http://127.0.0.1:8080/"
 headers={'content-type':'application/json'}
 global service
 task_channel='taskBroadcast'
@@ -31,7 +33,7 @@ def init(serviceName,load=0,calcAbility=0):
     jsonDict['serviceName']=serviceName
     jsonDict['load']=0
     jsonDict['calcAbility']=0
-    r=requests.post(ip,data=json.dumps(jsonDict),headers=headers)
+    r=requests.post(ip+'service',data=json.dumps(jsonDict),headers=headers)
     info=r.json()
     global service
     service=Service.objects.filter(uuid=info['serviceUUID'])[0]
@@ -46,8 +48,27 @@ def task_waiting():
             print item['data']
             jsonDict=json.loads(item['data'])
             print jsonDict['serviceUUID']
-            if jsonDict['serviceUUID']==service.uuid:
-                print jsonDict
+            uuid=jsonDict['taskID']
+            if uuid==service.uuid:
+                logging.debug('Task running')
+                if jsonDict['dataPackage']!='':
+                    logging.debug('Going to dowonload: '+jsonDict['dataPackage'])
+                    os.mkdir('worker/data/'+uuid)
+                    file=jsonDict['dataPackage']
+                    r=requests.get(ip+'uploads/'+file)
+                    with open("worker/data/"+uuid+"/"+file, "wb") as code:
+                        code.write(r.content)
+                    logging.debug('Dowonload finished')
+                    if file.split('.')[-1]=='gz':
+                        try:
+                            tar=tarfile.open('worker/data/'+uuid+"/"+file,"r:gz")
+                            file_names = tar.getnames()
+                            for file_name in file_names:
+                                tar.extract(file_name, 'worker/data/'+uuid+"/")
+                            tar.close()
+                        except Exception, e:
+                            raise Exception, e
+
 
 
 def main_process():
