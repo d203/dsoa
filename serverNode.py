@@ -5,16 +5,46 @@ import json
 import redis
 from model.Service import Service
 from multiprocessing import Process
+from flask import send_from_directory
 #init param
 app=Flask (__name__)
 task_channel = 'taskBroadcast'
+app.config['UPLOAD_FOLDER'] = 'static/data/'
 global r
+
+@app.route('/',methods=['GET'])
+def index():
+    return render_template('index.html')
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            filename = file.filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file',
+                                    filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form action="/upload" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/uploads/<filename>',methods=['GET'])
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
 @app.route('/request',methods=['POST'])
 def taskRequest():
     requestInfo=request.json
-    service=Service.objects.filter(name=requestInfo['serviceName'])[0]
+    service=Service.objects.filter(name=requestInfo['serviceName'])[-1]
     requestInfo['serviceUUID']=service.uuid
-    r.publish(task_channel,requestInfo)
+    r.publish(task_channel,json.dumps(requestInfo))
     return ''
 
 @app.route('/service',methods=['POST'])

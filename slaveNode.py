@@ -33,6 +33,7 @@ def init(serviceName,load=0,calcAbility=0):
     jsonDict['calcAbility']=0
     r=requests.post(ip,data=json.dumps(jsonDict),headers=headers)
     info=r.json()
+    global service
     service=Service.objects.filter(uuid=info['serviceUUID'])[0]
     print info
     logging.debug('Service Start')
@@ -43,7 +44,7 @@ def task_waiting():
     for item in msg.listen():
         if item['type']=='message':
             print item['data']
-            jsonDict=json.loads(item['data'],encoding='unicode')
+            jsonDict=json.loads(item['data'])
             print jsonDict['serviceUUID']
             if jsonDict['serviceUUID']==service.uuid:
                 print jsonDict
