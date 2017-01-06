@@ -7,6 +7,8 @@ import uuid as UUID
 from model.Service import Service
 from multiprocessing import Process
 from flask import send_from_directory
+import tarfile
+
 #init param
 app=Flask (__name__)
 task_channel = 'taskBroadcast'
@@ -15,8 +17,15 @@ global r
 @app.route('/',methods=['GET'])
 def index():
     return render_template('index.html')
-
-#上传数据包到datacenter
+@app.route('/status',methods=['GET'])
+def status():
+    return 'ture'
+@app.route('/asyn')
+def wait():
+    for i in range(1,100000000):
+        pass
+    return 'finish'
+#upload data to datacenter
 @app.route('/data/package/<filename>', methods=[ 'POST'])
 def upload_package_to_datacenter(filename):
     file = request.files['file']
@@ -37,10 +46,26 @@ def task_request():
     service=Service.objects.filter(name=requestInfo['serviceName'])[-1]
     requestInfo['serviceUUID']=service.uuid
     requestInfo['taskID']=str(UUID.uuid1())
+
     if requestInfo['data_package']:
 
-    r.publish(task_channel,json.dumps(requestInfo))
+        r.publish(task_channel,json.dumps(requestInfo))
     return ''
+
+#divided data_package for distribute
+def unpack_data(package_name):
+    #unpack_data
+    if os.path.exists('datacenter/data/package/'+package_name)==False:
+        os.mkdir('datacenter/data/package/'+package_name)
+    tar=tarfile.open('datacenter/data/package/'+package_name+'.tar.gz',"r:gz")
+    file_names=tar.getnames()
+    for file_name in file_names:
+        tar.extract(file_name,'datacenter/data/package/'+package_name+'/')
+    tar.close()
+
+
+
+
 
 @app.route('/service',methods=['POST'])
 def add_service():
@@ -65,6 +90,7 @@ def main_process():
 if __name__=='__main__':
     r=redis.Redis(host='localhost',port=6379,db=0)
     app.debug=True
+
     p = Process(target = main_process)
     p.start()
     app.run(port=8080)
