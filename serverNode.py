@@ -10,47 +10,40 @@ from flask import send_from_directory
 #init param
 app=Flask (__name__)
 task_channel = 'taskBroadcast'
-app.config['UPLOAD_FOLDER'] = 'static/data/'
 global r
 
 @app.route('/',methods=['GET'])
 def index():
     return render_template('index.html')
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file:
-            filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form action="/upload" method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
-    '''
 
-@app.route('/uploads/<filename>',methods=['GET'])
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+#上传数据包到datacenter
+@app.route('/data/package/<filename>', methods=[ 'POST'])
+def upload_package_to_datacenter(filename):
+    file = request.files['file']
+    if file:
+        file.save(os.path.join('datacenter/data/package', filename))
+        return 'upload done'
+    return 'upload fail'
+
+
+# @app.route('/uploads/<filename>',methods=['GET'])
+# def uploaded_file(filename):
+#     return send_from_directory(app.config['UPLOAD_FOLDER'],
+#                                filename)
 
 @app.route('/request',methods=['POST'])
-def taskRequest():
+def task_request():
     requestInfo=request.json
     service=Service.objects.filter(name=requestInfo['serviceName'])[-1]
     requestInfo['serviceUUID']=service.uuid
     requestInfo['taskID']=str(UUID.uuid1())
+    if requestInfo['data_package']:
+
     r.publish(task_channel,json.dumps(requestInfo))
     return ''
 
 @app.route('/service',methods=['POST'])
-def addService():
+def add_service():
     info=request.json
     info['serviceIP']=request.remote_addr
     print info
@@ -61,11 +54,7 @@ def addService():
     print service.save()
     return service.get_json()
 
-@app.route('/')
-def show_list():
-    entries=db.get_entries()
-    for e in entries:
-        print 'title is:' +e.title+' text is:' +e.row+'/n'
+
 
 #main_process
 def main_process():
