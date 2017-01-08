@@ -59,8 +59,14 @@ def upload_package_to_datacenter(filename):
 #Description : Controller ,upload codes
 #------------------------------------------------------------------------------
 
-
-
+@app.route('/data/service', methods=[ 'POST'])
+def upload_package_to_datacenter_code():
+    if len(request.form['filename']) > 0:
+        file_object = open('datacenter/service/'+request.form['filename'], 'w')
+        file_object.write(request.form['codes'])
+        file_object.close( )
+        return 'Upload code OK!'
+    return 'Plead input filename'
 #------------------------------------------------------------------------------
 #Author : Wang Bingyi
 #Data : 170108
