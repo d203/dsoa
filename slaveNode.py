@@ -9,6 +9,12 @@ import logging
 import os
 import tarfile
 
+from SimpleXMLRPCServer import SimpleXMLRPCServer
+from SocketServer import ThreadingMixIn
+
+
+
+
 #init param
 def set_debug():
     logging.basicConfig(level=logging.DEBUG,
@@ -28,7 +34,76 @@ global service
 task_channel='taskBroadcast'
 host='localhost'
 jsonDict={}
+worker_list={}
 
+#
+class ThreadXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):pass
+
+#add worker to run script
+def add_worker(worker_name,script):
+    print 'try to find '+worker_name
+    if worker_name in worker_list:
+        print "worker has already in the worker_list try to use it."
+    else:
+        print "try to add worker: "+worker_name
+        worker=CodeBuilder()
+        worker.set_code(script)
+        worker_list[worker_name]=worker
+
+        return "new worker has been added"
+
+    return "finished"
+
+#start worker with paramMap
+def start_worker(worker_name,param_map_list,file_list):
+    print "start worker: "+worker_name
+    if len(param_map_list)==1:
+        p_worker_thread=Process(target=worker_thread)
+        p_worker_thread.start()
+
+
+def worker_thread()
+
+#CodeBuilder to run a python code
+class CodeBuilder(object):
+    def __init__(self,indent=0):
+        self.code=[]
+        self.indent_level=indent
+    def add_line(self,line):
+        self.code.extend([" " * self.indent_level, line, "\n"])
+    INDENT_STEP = 4      # PEP8 says so!
+    global_namespace={}
+    def indent(self):
+        """Increase the current indent for following lines."""
+        self.indent_level += self.INDENT_STEP
+
+    def dedent(self):
+        """Decrease the current indent for following lines."""
+        self.indent_level -= self.INDENT_STEP
+    def add_section(self):
+        section=CodeBuilder(self.indent_level)
+        self.code.append(section)
+        return section
+    def set_code(self,code):
+        self.code=code
+    def set_namespace(namespace):
+        self.global_namespace=namespace
+    def __str__(self):
+        return "".join(str(c) for c in self.code)
+    def run(self):
+        """Execute the code, and return a dict of globals it defines."""
+        # A check that the caller really finished all the blocks they started.
+        assert self.indent_level == 0
+        # Get the Python source as a single string.
+        python_source = str(self)
+        # Execute the source, defining globals, and return them.
+        global_namespace=self.global_namespace
+        exec(python_source, global_namespace)
+        return global_namespace
+    def
+
+
+#init service, post information to serverNode
 def init(serviceName,load=0,calcAbility=0):
     jsonDict['serviceName']=serviceName
     jsonDict['load']=0
@@ -42,6 +117,8 @@ def init(serviceName,load=0,calcAbility=0):
 
 
 
+
+# listen channel
 def task_waiting():
     for item in msg.listen():
         if item['type']=='message':
@@ -76,9 +153,14 @@ def main_process():
     global msg
     msg=r.pubsub()
     msg.subscribe(task_channel)
+    server=ThreadXMLRPCServer(("0.0.0.0",8089),allow_none=True)
+    server.register_function(add_worker)
+    print "Service start to istening on port 8089"
+    server.serve_forever()
     p_task_waiting=Process(target=task_waiting)
     p_task_waiting.start()
     p_task_waiting.join()
+
 
 if __name__=='__main__':
     set_debug()

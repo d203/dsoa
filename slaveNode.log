@@ -1,3 +1,3 @@
-Tue, 13 Dec 2016 10:48:49 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
-Tue, 13 Dec 2016 10:48:49 connectionpool.py[line:401] DEBUG "POST /service HTTP/1.1" 200 108
-Tue, 13 Dec 2016 10:48:49 slaveNode.py[line:41] DEBUG Service Start
+Sat, 07 Jan 2017 22:55:13 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Sat, 07 Jan 2017 22:55:13 connectionpool.py[line:401] DEBUG "POST /service HTTP/1.1" 200 108
+Sat, 07 Jan 2017 22:55:13 slaveNode.py[line:65] DEBUG Service Start
