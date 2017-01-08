@@ -55,14 +55,21 @@ def add_worker(worker_name,script):
     return "finished"
 
 #start worker with paramMap
-def start_worker(worker_name,param_map_list,file_list):
-    print "start worker: "+worker_name
+def start_worker(worker_name,worker_id,param_map_list,hdf_file):
+    print "start worker: "+worker_name+" with id "+worker_id
     if len(param_map_list)==1:
-        p_worker_thread=Process(target=worker_thread)
+        p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,param_map_list,hdf_file))
         p_worker_thread.start()
 
 
-def worker_thread()
+def worker_thread(worker_name,worker_id,param_map_list,hdf_file):
+    namespace=param_map_list(0)
+    worker=worker_list[worker_name]
+    worker.set_namespace(namespace)
+    print "thread for deal "+worker_id+" has been started"
+    worker.run();
+
+
 
 #CodeBuilder to run a python code
 class CodeBuilder(object):
