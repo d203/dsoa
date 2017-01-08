@@ -2,7 +2,7 @@ import requests
 import tools
 import requests
 import json
-from multiprocessing import Process
+from multiprocessing import Process,Pool
 from model.Service import Service
 import redis
 import logging
@@ -55,19 +55,25 @@ def add_worker(worker_name,script):
     return "finished"
 
 #start worker with paramMap
-def start_worker(worker_name,worker_id,param_map_list,hdf_file):
+def start_worker(worker_name,worker_id,worker_num,param_map_list,hdf_file):
     print "start worker: "+worker_name+" with id "+worker_id
     if len(param_map_list)==1:
-        p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,param_map_list,hdf_file))
+        p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,worker_num,param_map_list,hdf_file))
         p_worker_thread.start()
+        print "thread start"
 
 
-def worker_thread(worker_name,worker_id,param_map_list,hdf_file):
-    namespace=param_map_list(0)
+def worker_thread(worker_name,worker_id,worker_num,param_map_list,hdf_file):
+    pool=Pool(processes=4)
+    namespace=param_map_list[0]
     worker=worker_list[worker_name]
     worker.set_namespace(namespace)
-    print "thread for deal "+worker_id+" has been started"
-    worker.run();
+    for i in xrange(worker_num):    
+        pool.apply_async(worker.run)
+        print "Worker number: "+str(worker_num)+"has been started"
+    pool.close()
+    pool.join()
+
 
 
 
@@ -93,7 +99,7 @@ class CodeBuilder(object):
         return section
     def set_code(self,code):
         self.code=code
-    def set_namespace(namespace):
+    def set_namespace(self,namespace):
         self.global_namespace=namespace
     def __str__(self):
         return "".join(str(c) for c in self.code)
@@ -107,7 +113,7 @@ class CodeBuilder(object):
         global_namespace=self.global_namespace
         exec(python_source, global_namespace)
         return global_namespace
-    def
+
 
 
 #init service, post information to serverNode
@@ -162,6 +168,7 @@ def main_process():
     msg.subscribe(task_channel)
     server=ThreadXMLRPCServer(("0.0.0.0",8089),allow_none=True)
     server.register_function(add_worker)
+    server.register_function(start_worker)
     print "Service start to istening on port 8089"
     server.serve_forever()
     p_task_waiting=Process(target=task_waiting)
