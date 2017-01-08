@@ -8,10 +8,10 @@ import redis
 import logging
 import os
 import tarfile
-
+from contextlib import closing
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
-
+import sys
 
 
 
@@ -55,24 +55,64 @@ def add_worker(worker_name,script):
     return "finished"
 
 #start worker with paramMap
-def start_worker(worker_name,worker_id,worker_num,param_map_list,hdf_file):
+def start_worker(worker_name,worker_id,worker_num,param_map_list,file_package):
     print "start worker: "+worker_name+" with id "+worker_id
     if len(param_map_list)==1:
-        p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,worker_num,param_map_list,hdf_file))
+        p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,worker_num,param_map_list,file_package))
         p_worker_thread.start()
         print "thread start"
 
 
-def worker_thread(worker_name,worker_id,worker_num,param_map_list,hdf_file):
+def worker_thread(worker_name,worker_id,worker_num,param_map_list,file_package):
     pool=Pool(processes=4)
     namespace=param_map_list[0]
     worker=worker_list[worker_name]
-    worker.set_namespace(namespace)
-    for i in xrange(worker_num):    
-        pool.apply_async(worker.run)
+    root_dir="worker/data/"+file_package
+    root_out_dir="worker/outdata/"
+    if not os.path.exists(root_dir):
+        download_file('http://127.0.0.1:8080/static/'+file_package)
+
+    #now apply worker from file_package
+    path_ls=os.listdir(root_dir)
+    for i in xrange(worker_num):
+        pool.apply_async(do_worker(worker,worker_id,namespace,root_dir+'/'+path_ls[i],root_out_dir+worker_id+path_ls[i]))
         print "Worker number: "+str(worker_num)+"has been started"
     pool.close()
     pool.join()
+    #TODO: upload output file to server
+
+
+def do_worker(worker,worker_id,namespace,input_file_path,output_file_path):
+    namespace['input_file_path']=input_file_path
+    namespace['output_file_path']=output_file_path
+    worker.run_with(worker,namespace)
+    return namespace
+
+def download_package(url,package_name):
+    response=requests.get(url+package_name, stream=True)
+    chunk_size = 1024
+    size=0;
+    content_size = int(response.headers['content-length'])
+    with open('worker/data/'+package_name, "wb") as file:
+       for data in response.iter_content(chunk_size=chunk_size):
+           file.write(data)
+           size+=len(data)
+           sys.stdout.write('donwloading --'+' '* 10 + '\r')
+           sys.stdout.flush()
+           sys.stdout.write('donwloading --'+'#'* (size*10/content_size) + '\r')
+           sys.stdout.flush()
+    response.close()
+    unpack_data(package_name)
+
+def unpack_data(package_name):
+    #unpack_data
+    if os.path.exists('worker/data/'+package_name)==False:
+        os.mkdir('worker/data/'+package_name)
+    tar=tarfile.open('worker/data/'+package_name,"r:gz")
+    file_names=tar.getnames()
+    for file_name in file_names:
+        tar.extract(file_name,'worker/data/'+package_name+'/')
+    tar.close()
 
 
 
@@ -112,6 +152,10 @@ class CodeBuilder(object):
         # Execute the source, defining globals, and return them.
         global_namespace=self.global_namespace
         exec(python_source, global_namespace)
+        return global_namespace
+    def run_with(self,namespace):
+        python_source=str(self)
+        exec(python_source,namespace)
         return global_namespace
 
 

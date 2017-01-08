@@ -46,3 +46,12 @@ http://aosabook.org/en/500L/a-template-engine.html 这个开源项目里面提�
 hdf5可以解决我现在遇到的问题，可以将数据保存为hdf5的格式，然后再通过hdf5压缩，存储，分包，发放。代码想使用hdf5中的数据，只需要在传入给子节点的param_map_list里面，对应的输入‘file.\*’这样的格式就可以了
 关于param_map_list我是这样计划的
 param_map_list是一个map序列，里面可以选择存储一个map，或者一串map。如果只有一个map时，表示所有的文件都将按照这个参数进行处理，如果是一个list，并且该list与文件长度相同，就按照这个list分别对每个文件进行处理。
+----2017 1/8 13:24----
+解决了param_map_list（还没写多变量的情况），worker可以工作在进程池里面了，现在的问题就是解决hdf5文件格式
+----2017 1/8 17:20----
+HDF5被我抛弃了，最后还是使用传统的HTTP下载的方式来解决。
+编完了下载与解压的代码，现在可以根据服务器的请求来下载数据包并且执行了，不过还没有写回调函数。
+任务分分发的格式
+add_worker(worker_name,script) 添加一个worker，以及他的代码
+start_worker(worker_name,worker_id,worker_num,param_map_list,file_package) 执行worker ，提供执行的worker id 数量，变量列表和文件包名称
+现在开始写返回函数。
