@@ -8,7 +8,7 @@ from model.Service import Service
 from multiprocessing import Process
 from flask import send_from_directory
 import tarfile
-
+import xmlrpclib
 #init param
 app=Flask (__name__)
 task_channel = 'taskBroadcast'
@@ -17,6 +17,9 @@ global r
 @app.route('/',methods=['GET'])
 def index():
     return render_template('AdminLTE-2.3.7/index.html')
+@app.route('/manage_worker',methods=['GET'])
+def start_worker():
+    return render_template('AdminLTE-2.3.7/manage_worker.html')
 
 @app.route('/upload_files')
 def upload_files():
@@ -64,7 +67,7 @@ def upload_package_to_datacenter_code():
     if len(request.form['filename']) > 0:
         file_object = open('datacenter/service/'+request.form['filename'], 'w')
         file_object.write(request.form['codes'])
-        file_object.close( )
+        file_object.close()
         return 'Upload code OK!'
     return 'Plead input filename'
 #------------------------------------------------------------------------------
@@ -104,12 +107,12 @@ def static_path_pages(s_path):
 def static_path_plugins(s_path):
     return redirect("/static/plugins/"+s_path)
 
-#---------------------------------End------------------------------------------
 
-# @app.route('/uploads/<filename>',methods=['GET'])
-# def uploaded_file(filename):
-#     return send_from_directory(app.config['UPLOAD_FOLDER'],
-#                                filename)
+@app.route('/datacenter/<filename>',methods=['GET'])
+def uploaded_file(filename):
+    return send_from_directory('/datacenter/data/package',
+                               filename)
+
 
 @app.route('/request',methods=['POST'])
 def task_request():
@@ -117,11 +120,48 @@ def task_request():
     service=Service.objects.filter(name=requestInfo['serviceName'])[-1]
     requestInfo['serviceUUID']=service.uuid
     requestInfo['taskID']=str(UUID.uuid1())
-
     if requestInfo['data_package']:
-
         r.publish(task_channel,json.dumps(requestInfo))
     return ''
+
+#get information from datacenter
+@app.route('/data/package',methods=['GET'])
+def get_data_package():
+    pass
+
+@app.route('/data/service',methods=['GET'])
+def get_data_service():
+    pass
+
+@app.route('/task',methods=['POST'])
+def start_task():
+    service=dispatch_task()
+    task_server = SimpleXMLRPCServer.SimpleXMLRPCServer((service['serviceIP'], 8089))
+    info=request.json
+    file_object = open('datacenter/service/'+info['script_code'], 'r')
+    script=file_object.read()
+    file_object.close( )
+    task_server.add_worker(info['worker_name'],script)
+    uuid=str(UUID.uuid1())
+    task_server.start_worker(info['worker_name'],uuid,info['worker_num'],info['file_package'])
+
+
+@app.route('/task/<task_id>/finished',methods=['POST'])
+def finish_task(task_id):
+    print task_id+' has been finished'
+    file = request.files['file']
+    print 'try to save file '+file.filename
+    if file:
+        file.save(os.path.join('datacenter/data/output', file.filename))
+        return 'upload done'
+    return 'upload fail'
+
+
+def dispatch_task(worker_name):
+    service=Service.objects.all()[0]
+    return service
+
+
 
 #divided data_package for distribute
 def unpack_data(package_name):

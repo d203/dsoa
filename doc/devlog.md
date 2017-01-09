@@ -55,3 +55,6 @@ HDF5被我抛弃了，最后还是使用传统的HTTP下载的方式来解决。
 add_worker(worker_name,script) 添加一个worker，以及他的代码
 start_worker(worker_name,worker_id,worker_num,param_map_list,file_package) 执行worker ，提供执行的worker id 数量，变量列表和文件包名称
 现在开始写返回函数。
+---2017 1/9 20:16----
+slaveNode返回函数已经可以使用，serverNode发布任务函数也写好了
+接下来需要测试模块，然后配置网页

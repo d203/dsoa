@@ -70,7 +70,7 @@ def worker_thread(worker_name,worker_id,worker_num,param_map_list,file_package):
     root_dir="worker/data/"+file_package
     root_out_dir="worker/outdata/"
     if not os.path.exists(root_dir):
-        download_file('http://127.0.0.1:8080/static/'+file_package)
+        download_file('http://127.0.0.1:8080/datacenter/'+file_package)
 
     #now apply worker from file_package
     path_ls=os.listdir(root_dir)
