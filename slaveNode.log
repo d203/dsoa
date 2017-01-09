@@ -1,3 +1,7 @@
-Mon, 09 Jan 2017 19:33:08 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
-Mon, 09 Jan 2017 19:33:08 connectionpool.py[line:401] DEBUG "POST /service HTTP/1.1" 200 108
-Mon, 09 Jan 2017 19:33:08 slaveNode.py[line:173] DEBUG Service Start
+Mon, 09 Jan 2017 22:01:10 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Mon, 09 Jan 2017 22:01:10 connectionpool.py[line:401] DEBUG "POST /service HTTP/1.1" 200 108
+Mon, 09 Jan 2017 22:01:10 slaveNode.py[line:190] DEBUG Service Start
+Mon, 09 Jan 2017 22:01:11 slaveNode.py[line:59] DEBUG test_worker with id 12cbb521-d674-11e6-9f23-54271e27efc1
+Mon, 09 Jan 2017 22:01:11 slaveNode.py[line:67] DEBUG now comes to worker_thread
+Mon, 09 Jan 2017 22:01:12 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Mon, 09 Jan 2017 22:01:12 connectionpool.py[line:401] DEBUG "POST /task/12cbb521-d674-11e6-9f23-54271e27efc1/finished HTTP/1.1" 200 11

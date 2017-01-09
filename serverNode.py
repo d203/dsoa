@@ -109,8 +109,8 @@ def static_path_plugins(s_path):
 
 
 @app.route('/datacenter/<filename>',methods=['GET'])
-def uploaded_file(filename):
-    return send_from_directory('/datacenter/data/package',
+def get_data_package(filename):
+    return send_from_directory('datacenter/data/package/',
                                filename)
 
 
@@ -124,10 +124,7 @@ def task_request():
         r.publish(task_channel,json.dumps(requestInfo))
     return ''
 
-#get information from datacenter
-@app.route('/data/package',methods=['GET'])
-def get_data_package():
-    pass
+
 
 @app.route('/data/service',methods=['GET'])
 def get_data_service():
@@ -135,16 +132,17 @@ def get_data_service():
 
 @app.route('/task',methods=['POST'])
 def start_task():
-    service=dispatch_task()
-    task_server = SimpleXMLRPCServer.SimpleXMLRPCServer((service['serviceIP'], 8089))
+    print 'a new task'
     info=request.json
+    service=dispatch_task(info['worker_name'])
+    task_server =  xmlrpclib.ServerProxy("http://127.0.0.1:8089")
     file_object = open('datacenter/service/'+info['script_code'], 'r')
     script=file_object.read()
     file_object.close( )
     task_server.add_worker(info['worker_name'],script)
     uuid=str(UUID.uuid1())
-    task_server.start_worker(info['worker_name'],uuid,info['worker_num'],info['file_package'])
-
+    task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
+    return ''
 
 @app.route('/task/<task_id>/finished',methods=['POST'])
 def finish_task(task_id):

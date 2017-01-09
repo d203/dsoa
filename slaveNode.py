@@ -56,39 +56,48 @@ def add_worker(worker_name,script):
 
 #start worker with paramMap
 def start_worker(worker_name,worker_id,worker_num,param_map_list,file_package):
-    print "start worker: "+worker_name+" with id "+worker_id
+    logging.debug(worker_name+" with id "+worker_id)
     if len(param_map_list)==1:
         p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,worker_num,param_map_list,file_package))
         p_worker_thread.start()
         print "thread start"
-
+    print 'param_map_list error'
 
 def worker_thread(worker_name,worker_id,worker_num,param_map_list,file_package):
-    pool=Pool(processes=4)
+    logging.debug("now comes to worker_thread")
+    pool=Pool(processes=8)
     namespace=param_map_list[0]
     worker=worker_list[worker_name]
-    root_dir="worker/data/"+file_package
-    root_out_dir="worker/outdata/"
-    if not os.path.exists(root_dir):
-        download_file('http://127.0.0.1:8080/datacenter/'+file_package)
-
+    package_path="worker/data/"+file_package
+    input_data="worker/data/"+worker_id+"/"
+    output_data="worker/outdata/"+worker_id+"/"
+    if not os.path.exists(package_path):
+        download_package('http://127.0.0.1:8080/datacenter/',file_package)
+    unpack_data(file_package,worker_id)
+    os.mkdir(output_data)
     #now apply worker from file_package
-    path_ls=os.listdir(root_dir)
+    path_ls=os.listdir(input_data)
     for i in xrange(worker_num):
-        pool.apply_async(do_worker(worker,worker_id,namespace,root_dir+'/'+path_ls[i],root_out_dir+worker_id+path_ls[i]))
-        print "Worker number: "+str(worker_num)+"has been started"
+        pool.apply_async(do_worker(worker,worker_id,namespace,input_data+path_ls[i],output_data+path_ls[i]))
+        print "Worker number: "+str(i)+"has been started"
+
+    pack_data(worker_id)
+    file_to_upload = {'file':open('worker/outdata/package/'+worker_id+'.tar.gz','r')}
+    requests.post('http://127.0.0.1:8080/task/'+worker_id+'/finished',files=file_to_upload)
     pool.close()
     pool.join()
-    #TODO: upload output file to server
+
 
 
 def do_worker(worker,worker_id,namespace,input_file_path,output_file_path):
+    print 'do_worker now running'
     namespace['input_file_path']=input_file_path
     namespace['output_file_path']=output_file_path
-    worker.run_with(worker,namespace)
+    worker.run_with(namespace)
     return namespace
 
 def download_package(url,package_name):
+    print 'start donwload'
     response=requests.get(url+package_name, stream=True)
     chunk_size = 1024
     size=0;
@@ -102,18 +111,26 @@ def download_package(url,package_name):
            sys.stdout.write('donwloading --'+'#'* (size*10/content_size) + '\r')
            sys.stdout.flush()
     response.close()
-    unpack_data(package_name)
 
-def unpack_data(package_name):
+def unpack_data(package_name,worker_id):
     #unpack_data
     if os.path.exists('worker/data/'+package_name)==False:
-        os.mkdir('worker/data/'+package_name)
+        os.mkdir('worker/data/'+worker_id)
     tar=tarfile.open('worker/data/'+package_name,"r:gz")
     file_names=tar.getnames()
     for file_name in file_names:
-        tar.extract(file_name,'worker/data/'+package_name+'/')
+        tar.extract(file_name,'worker/data/'+worker_id+'/')
     tar.close()
 
+def pack_data(worker_id):
+    t = tarfile.open('worker/outdata/package/'+worker_id+'.tar.gz', "w:gz")
+    for root, dir, files in os.walk('worker/outdata/'+worker_id):
+        print root, dir, files
+        for file in files:
+            fullpath = os.path.join(root, file)
+            t.add(fullpath,arcname=file)
+
+    t.close()
 
 
 
@@ -156,7 +173,7 @@ class CodeBuilder(object):
     def run_with(self,namespace):
         python_source=str(self)
         exec(python_source,namespace)
-        return global_namespace
+        return namespace
 
 
 
