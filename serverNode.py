@@ -156,6 +156,7 @@ def get_data_service():
 def start_task():
     print 'a new task'
     info=request.json
+    print info
     service=dispatch_task(info['worker_name'])
     task_server =  xmlrpclib.ServerProxy("http://127.0.0.1:8089")
     file_object = open('datacenter/service/'+info['script_code'], 'r')
@@ -168,16 +169,21 @@ def start_task():
     t.worker_name=info['worker_name']
     t.script_code=info['script_code']
     t.status='running'
+    t.save()
     task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
     return ''
 
 @app.route('/task/<task_id>/finished',methods=['POST'])
 def finish_task(task_id):
     print task_id+' has been finished'
+    t=WorkerTask.objects.filter(task_id=task_id)
+    t.status='done'
+    print t[0].save()
     file = request.files['file']
     print 'try to save file '+file.filename
     if file:
         file.save(os.path.join('datacenter/data/output', file.filename))
+        unpack_output_data(file.filename)
         return 'upload done'
     return 'upload fail'
 
@@ -186,17 +192,32 @@ def dispatch_task(worker_name):
     service=Service.objects.all()[0]
     return service
 
+@app.route('/task/list',methods=['GET'])
+def get_task_list():
+    l=[]
+    tasks=WorkerTask.objects.all()
+    for task in tasks:
+        l.append(task.get_json())
+    return json.dumps(l)
 
-
+@app.route('/task/output/<task_id>/list',methods=['GET'])
+def get_output_list(task_id):
+    l=[]
+    for root,dir,files in os.walk('datacenter/data/output/'+task_id):
+        for file in files:
+            l.append(file)
+    return json.dumps(l)
+@app.route('/task/output/<task_id>/<file_name>',methods=['GET'])
+def get_output_file(task_id,file_name):
+    return send_from_directory('datacenter/data/output/'+task_id+'/',file_name)
 #divided data_package for distribute
-def unpack_data(package_name):
+def unpack_output_data(package_name):
     #unpack_data
-    if os.path.exists('datacenter/data/package/'+package_name)==False:
-        os.mkdir('datacenter/data/package/'+package_name)
-    tar=tarfile.open('datacenter/data/package/'+package_name+'.tar.gz',"r:gz")
+    print package_name
+    tar=tarfile.open('datacenter/data/output/'+package_name,"r:gz")
     file_names=tar.getnames()
     for file_name in file_names:
-        tar.extract(file_name,'datacenter/data/package/'+package_name+'/')
+        tar.extract(file_name,'datacenter/data/output/'+package_name[:-7]+'/')
     tar.close()
 
 

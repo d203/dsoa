@@ -5,3 +5,11 @@ class WorkerTask(models.Model):
     worker_name=models.Attribute(required=True)
     script_code=models.Attribute(required=True)
     status=models.Attribute()
+    
+    def get_json(self):
+        return json.dumps({
+            'task_id':self.task_id,
+            'worker_name':self.worker_name,
+            'script_code':self.script_code,
+            'status':self.status
+        })
