@@ -300,7 +300,7 @@
                 </br>
             	</div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal" id="close_modal">关闭</button>
                 <button type="button" class="btn btn-primary" onclick="handup()">生成</button>
               </div>
             </form>
@@ -759,29 +759,22 @@
 
    			type: "POST",
    			url: "/task",
-        dataType:"json",
+        dataType:"text",
         contentType:"application/json",
         data:JSON.stringify(jsondata),
-   		// 	data:{
-   		// 	worker_name:worker_name,
-   		// 	script_code:script_code,
-   		// 	file_package:file_package,
-   		// 	worker_num:worker_num
-   		// 	},
-   			beforeSend: function() {},
    			success: function(data) {
-   			if(data=="OK")
-        {
-          alert("ok");
-     			location.href = "../";
-        }
-   			else{
-     			alert("NO!");
-   			}
+         			if(data=="OK")
+              {
+                alert("任务已提交");
+                $("#close_modal").click()
+              }
+         			else{
+           			alert("NO!");
+         			}
    			},
-   			error: function () {
-                           alert("Ajax请求数据失败!headinfo");
-   			}
+        error:function(){
+          alert('Some Thing Error')
+        }
    		});
    	}
 </script>

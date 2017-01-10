@@ -57,6 +57,7 @@ def add_worker(worker_name,script):
 #start worker with paramMap
 def start_worker(worker_name,worker_id,worker_num,param_map_list,file_package):
     logging.debug(worker_name+" with id "+worker_id)
+    worker_num=int(worker_num)
     if len(param_map_list)==1:
         p_worker_thread=Process(target=worker_thread,args=(worker_name,worker_id,worker_num,param_map_list,file_package))
         p_worker_thread.start()

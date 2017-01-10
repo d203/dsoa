@@ -1,7 +1,11 @@
-Wed, 11 Jan 2017 04:52:42 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
-Wed, 11 Jan 2017 04:52:42 connectionpool.py[line:401] DEBUG "POST /service HTTP/1.1" 200 108
-Wed, 11 Jan 2017 04:52:42 slaveNode.py[line:190] DEBUG Service Start
-Wed, 11 Jan 2017 04:52:45 slaveNode.py[line:59] DEBUG qwe with id bcf156e2-d776-11e6-9fa0-000c29fb9971
-Wed, 11 Jan 2017 04:52:45 slaveNode.py[line:67] DEBUG now comes to worker_thread
-Wed, 11 Jan 2017 04:52:45 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
-Wed, 11 Jan 2017 04:52:45 connectionpool.py[line:401] DEBUG "GET /datacenter/index.php HTTP/1.1" 200 3440
+Wed, 11 Jan 2017 05:22:26 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Wed, 11 Jan 2017 05:22:26 connectionpool.py[line:401] DEBUG "POST /service HTTP/1.1" 200 108
+Wed, 11 Jan 2017 05:22:26 slaveNode.py[line:191] DEBUG Service Start
+Wed, 11 Jan 2017 05:22:30 slaveNode.py[line:59] DEBUG 1 with id e47c8282-d77a-11e6-aa4c-54271e27efc1
+Wed, 11 Jan 2017 05:22:30 slaveNode.py[line:68] DEBUG now comes to worker_thread
+Wed, 11 Jan 2017 05:22:30 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Wed, 11 Jan 2017 05:22:30 connectionpool.py[line:401] DEBUG "GET /datacenter/2.tar HTTP/1.1" 200 2454927
+Wed, 11 Jan 2017 05:23:03 slaveNode.py[line:59] DEBUG test_worker with id f89a8926-d77a-11e6-aa4c-54271e27efc1
+Wed, 11 Jan 2017 05:23:03 slaveNode.py[line:68] DEBUG now comes to worker_thread
+Wed, 11 Jan 2017 05:23:04 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Wed, 11 Jan 2017 05:23:04 connectionpool.py[line:401] DEBUG "POST /task/f89a8926-d77a-11e6-aa4c-54271e27efc1/finished HTTP/1.1" 200 11

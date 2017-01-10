@@ -50,7 +50,8 @@ def index():
         return redirect('/login')
 @app.route('/manage_worker',methods=['GET'])
 def start_worker():
-    return render_template('AdminLTE-2.3.7/manage_worker.html')
+    task_list=get_task_list()
+    return render_template('AdminLTE-2.3.7/manage_worker.html',task_list=task_list)
 
 @app.route('/upload_files')
 def upload_files():
