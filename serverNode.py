@@ -1,5 +1,5 @@
 from flask import Flask,request,session,g,redirect,url_for,abort,\
-    render_template,flash
+    render_template,flash,jsonify
 import os
 import json
 import redis
@@ -122,7 +122,7 @@ def get_package_list():
     packages=datacenter.DataPackage.objects.all()
     for package in packages:
         l.append(package.get_json())
-    return json.dumps(l)
+    return jsonify(l)
 
 
 @app.route('/data/script/list',methods=['GET'])
@@ -131,7 +131,7 @@ def get_script_list():
     scripts=datacenter.WorkerScript.objects.all()
     for script in scripts:
         l.append(script.get_json())
-    return json.dumps(l)
+    return jsonify(l)
 
 
 
@@ -206,28 +206,32 @@ def get_task_list():
     tasks=WorkerTask.objects.all()
     for task in tasks:
         l.append(task.get_json())
-    return json.dumps(l)
-@app.route("/task/<task_id>/output",methods=['GET'])
+    return jsonify(l)
+
+@app.route("/task/<task_id>",methods=['GET'])
 def get_output_page(task_id):
     if not session['username']:
         return redirect('/login')
     else:
         return render_template('task_output_page.html',task_id=task_id)
+
 @app.route('/task/<task_id>/output/list',methods=['GET'])
 def get_output_list(task_id):
     l=[]
     for root,dir,files in os.walk('datacenter/data/output/'+task_id):
         for file in files:
             l.append(file)
-    return json.dumps(l)
+    return jsonify(l)
 
-@app.route('/task/<task_id>')
+@app.route('/task/<task_id>/info')
 def get_task_info(task_id):
     task=WorkerTask.objects.filter(task_id=task_id)[0]
     return task.get_json()
+
 @app.route('/task/<task_id>/output/<file_name>',methods=['GET'])
 def get_output_file(task_id,file_name):
     return send_from_directory('datacenter/data/output/'+task_id+'/',file_name)
+
 #divided data_package for distribute
 def unpack_output_data(package_name):
     #unpack_data
@@ -237,6 +241,7 @@ def unpack_output_data(package_name):
     for file_name in file_names:
         tar.extract(file_name,'datacenter/data/output/'+package_name[:-7]+'/')
     tar.close()
+
 
 
 
