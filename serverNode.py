@@ -43,11 +43,11 @@ def logout():
 
 @app.route('/',methods=['GET'])
 def index():
-    print session
-    if not session['username']:
+    try:
+        if session['username']:
+            return render_template('AdminLTE-2.3.7/index.html')
+    except:
         return redirect('/login')
-    else:
-        return render_template('AdminLTE-2.3.7/index.html')
 @app.route('/manage_worker',methods=['GET'])
 def start_worker():
     return render_template('AdminLTE-2.3.7/manage_worker.html')
@@ -163,6 +163,7 @@ def get_data_service():
 @app.route('/task',methods=['POST'])
 def start_task():
     print 'a new task'
+    print request
     info=request.json
     print info
     service=dispatch_task(info['worker_name'])
@@ -180,7 +181,7 @@ def start_task():
     t.file_package=info['file_package']
     t.save()
     task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
-    return ''
+    return 'OK'
 
 @app.route('/task/<task_id>/finished',methods=['POST'])
 def finish_task(task_id):
