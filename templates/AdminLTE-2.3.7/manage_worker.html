@@ -266,11 +266,11 @@
               <p>请选择数据包与所用服务</p>
             </div>
 
-            <form role="form">
+            <form role="form" action="/task" method="post">
               <div class="col-md-6">
               	<div class="form-group">
               		<label for="name">选择数据包</label>
-              		<select class="form-control" id="package_list">
+              		<select class="form-control" id="worker_name" name="file_package">
                 			<option>2</option>
                 			<option>3</option>
                 			<option>4</option>
@@ -282,7 +282,7 @@
               <div class="col-md-6">
               	<div class="form-group">
               		<label for="name">选择服务</label>
-              		<select class="form-control" id="code_list">
+              		<select class="form-control" id="script_code" name="script_code">
                 			<option>1</option>
                 			<option>2</option>
                 			<option>3</option>
@@ -291,11 +291,11 @@
               		</select>
                 </div>
             	</div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">关闭</button>
+                <button type="submit" class="btn btn-primary">生成</button>
+              </div>
             </form>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-left" data-dismiss="modal">关闭</button>
-              <button type="button" class="btn btn-primary">生成</button>
-            </div>
           </div>
           <!-- /.modal-content -->
         </div>
@@ -702,47 +702,42 @@
 <script src="static/dist/js/demo.js"></script>
 <script type="text/javascript">
 
- $("#package_list").click(
+ $("#button_start").click(
    function(){
      $.ajax({
                    type : "GET",  //提交方式
                    url : "/data/package/list",//路径
                    success : function(result) {//返回数据根据结果进行相应的处理
-                           alert(result);
+                           $("#worker_name").html("");
+                           str1='['+result+']';
+                           var objs = eval ("(" + str1 + ")");
+                           for (obj in objs)
+                           {
+                             $("#worker_name").append("<option>"+ objs[obj].package_name +"</option>");
+                           }
                    }
 
                })
   });
-// function loaddata()
-// {
-// 	var xmlhttp;
-// 	if (window.XMLHttpRequest)
-// 	{
-// 		xmlhttp=new XMLHttpRequest();
-// 	}
-// 	else
-// 	{
-// 		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-// 	}
-// 	xmlhttp.onreadystatechange=function()
-// 	{
-// 		if (xmlhttp.readyState==4 && xmlhttp.status==200)
-// 		{
-//       var obj = eval ("(" + xmlhttp.responseText + ")");
-//       window.alert(xmlhttp.responseText);
-//       string1 = "";
-//
-//       for (opt in obj)
-//       {
-//         string1=string1+"<option>"+opt.package_name+"</option>";
-//         window.alert(opt);
-//       }
-// 			document.getElementById("package_list").innerHTML=string1;
-// 		}
-// 	}
-// 	xmlhttp.open("GET","/data/package/list",true);
-// 	xmlhttp.send();
-// }
+
+  $("#button_start").click(
+    function(){
+      $.ajax({
+                    type : "GET",  //提交方式
+                    url : "/data/script/list",//路径
+                    success : function(result) {//返回数据根据结果进行相应的处理
+                            $("#script_code").html("");
+                            str1='['+result+']';
+                            var objs = eval ("(" + str1 + ")");
+                            for (obj in objs)
+                            {
+                              $("#script_code").append("<option>"+ objs[obj].script_name +"</option>");
+                            }
+                    }
+
+                })
+   });
+
 </script>
 </body>
 </html>
