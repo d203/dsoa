@@ -250,7 +250,7 @@
         <li class="active">Index</li>
       </ol>
       </section>
-    </section>
+
     <section class="content">
 
       <!-- main content -->
@@ -335,61 +335,23 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                    <td>Call of Duty IV</td>
-                    <td><span class="label label-success">Shipped</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#00a65a" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
-                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                    <td>Samsung Smart TV</td>
-                    <td><span class="label label-warning">Pending</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f39c12" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                    <td>iPhone 6 Plus</td>
-                    <td><span class="label label-danger">Delivered</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f56954" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                    <td>Samsung Smart TV</td>
-                    <td><span class="label label-info">Processing</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#00c0ef" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR1848</a></td>
-                    <td>Samsung Smart TV</td>
-                    <td><span class="label label-warning">Pending</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f39c12" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR7429</a></td>
-                    <td>iPhone 6 Plus</td>
-                    <td><span class="label label-danger">Delivered</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#f56954" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                    <td>Call of Duty IV</td>
-                    <td><span class="label label-success">Shipped</span></td>
-                    <td>
-                      <div class="sparkbar" data-color="#00a65a" data-height="20"><canvas width="34" height="20" style="display: inline-block; width: 34px; height: 20px; vertical-align: top;"></canvas></div>
-                    </td>
-                  </tr>
+                    {% block body %}
+
+                    {% for task in tasks[:-10:-1] %}
+                    <tr>
+                      <td><a href="/task/{{task.task_id}}">{{task.task_id[:8]}}</td>
+                      <td>{{task.worker_name}}</td>
+                      <td>
+                        {% if task.status=='done'%} <span class="label label-success">done</span> {% endif%}
+                        {% if task.status=='running'%} <span class="label label-warning">running</span> {% endif%}
+                      </td>
+                      <td>
+                        <a href="/task/{{task.task_id}}">查看结果</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+
+                  {% endblock %}
                   </tbody>
                 </table>
               </div>
@@ -463,7 +425,8 @@
           <!-- /.box-body -->
         </div>
     </div>
-  </div>
+
+</section>
     </section>
   </div>
   <!-- /.content-wrapper -->
@@ -766,7 +729,7 @@
          			if(data=="OK")
               {
                 alert("任务已提交");
-                $("#close_modal").click()
+               location.href="/manage_worker"
               }
          			else{
            			alert("NO!");

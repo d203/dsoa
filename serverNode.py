@@ -50,16 +50,18 @@ def index():
         return redirect('/login')
 @app.route('/manage_worker',methods=['GET'])
 def start_worker():
-    task_list=get_task_list()
-    return render_template('AdminLTE-2.3.7/manage_worker.html',task_list=task_list)
+    tasks=WorkerTask.objects.all()
+    return render_template('AdminLTE-2.3.7/manage_worker.html',tasks=tasks)
 
 @app.route('/upload_files')
 def upload_files():
-    return render_template('AdminLTE-2.3.7/upload_files.html')
+    data_packages=datacenter.DataPackage.objects.all()
+    return render_template('AdminLTE-2.3.7/upload_files.html',data_packages=data_packages)
 
 @app.route('/upload_codes')
 def upload_codes():
-    return render_template('AdminLTE-2.3.7/upload_codes.html')
+    worker_scripts=datacenter.WorkerScript.objects.all()
+    return render_template('AdminLTE-2.3.7/upload_codes.html',worker_scripts=worker_scripts)
 
 @app.route('/status',methods=['GET'])
 def status():
@@ -91,7 +93,7 @@ def upload_package_to_datacenter(filename):
             file.save(os.path.join('datacenter/data/package', file.filename))
             package.package_name=file.filename
         package.save()
-        return 'upload done'
+        return "upload Done!<span style='font-size:18px;'> </span><span style='font-size:24px;'><meta http-equiv='refresh' content='1;URL=/upload_files'> </span> "
     return 'upload fail'
 #------------------------------------------------------------------------------
 #Author : Wang Bingyi
@@ -108,7 +110,7 @@ def upload_package_to_datacenter_code():
         worker_script=datacenter.WorkerScript()
         worker_script.script_name=request.form['filename']
         worker_script.save()
-        return 'Upload code OK!'
+        return "upload Done!<span style='font-size:18px;'> </span><span style='font-size:24px;'><meta http-equiv='refresh' content='1;URL=/upload_codes'> </span> "
     return 'Plead input filename'
 #------------------------------------------------------------------------------
 #Author : Wang Bingyi
@@ -187,9 +189,9 @@ def start_task():
 @app.route('/task/<task_id>/finished',methods=['POST'])
 def finish_task(task_id):
     print task_id+' has been finished'
-    t=WorkerTask.objects.filter(task_id=task_id)
+    t=WorkerTask.objects.filter(task_id=task_id)[0]
     t.status='done'
-    print t[0].save()
+    print t.save()
     file = request.files['file']
     print 'try to save file '+file.filename
     if file:

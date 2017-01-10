@@ -9,3 +9,12 @@ Wed, 11 Jan 2017 05:23:03 slaveNode.py[line:59] DEBUG test_worker with id f89a89
 Wed, 11 Jan 2017 05:23:03 slaveNode.py[line:68] DEBUG now comes to worker_thread
 Wed, 11 Jan 2017 05:23:04 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
 Wed, 11 Jan 2017 05:23:04 connectionpool.py[line:401] DEBUG "POST /task/f89a8926-d77a-11e6-aa4c-54271e27efc1/finished HTTP/1.1" 200 11
+Wed, 11 Jan 2017 05:58:57 slaveNode.py[line:59] DEBUG demo with id fc327918-d77f-11e6-aa4c-54271e27efc1
+Wed, 11 Jan 2017 05:58:57 slaveNode.py[line:68] DEBUG now comes to worker_thread
+Wed, 11 Jan 2017 05:58:57 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Wed, 11 Jan 2017 05:58:58 connectionpool.py[line:401] DEBUG "POST /task/fc327918-d77f-11e6-aa4c-54271e27efc1/finished HTTP/1.1" 200 11
+Wed, 11 Jan 2017 06:01:50 slaveNode.py[line:59] DEBUG demo with id 6388ce82-d780-11e6-aa4c-54271e27efc1
+Wed, 11 Jan 2017 06:01:57 slaveNode.py[line:59] DEBUG demo with id 67798504-d780-11e6-aa4c-54271e27efc1
+Wed, 11 Jan 2017 06:01:57 slaveNode.py[line:68] DEBUG now comes to worker_thread
+Wed, 11 Jan 2017 06:01:57 connectionpool.py[line:214] INFO Starting new HTTP connection (1): 127.0.0.1
+Wed, 11 Jan 2017 06:01:57 connectionpool.py[line:401] DEBUG "POST /task/67798504-d780-11e6-aa4c-54271e27efc1/finished HTTP/1.1" 200 11

@@ -249,11 +249,46 @@
         <li class="active">upload files</li>
       </ol>
       <section class="content">
-        <div class="callout callout-info">
-            <h4>This page is for upload files</h4>
-            <p>Look!</p>
-        </div>
 
+        <div class="col-md-6">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">数据包</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <table class="table table-bordered">
+                <tbody><tr>
+                  <th style="width: 10px">#</th>
+                  <th>数据包名称</th>
+                  <th style="width: 40px">数据包类型</th>
+                </tr>
+                {% block body %}
+                {% for data_package in data_packages[:-10:-1] %}
+                <tr>
+                  <td>{{loop.index}}.</td>
+                  <td><a>{{data_package.package_name}}</a></td>
+                  <td>
+                    <span class="badge bg-green">.tar.gz</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% endblock %}
+
+              </tbody></table>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer clearfix">
+              <ul class="pagination pagination-sm no-margin pull-right">
+                <li><a href="#">«</a></li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">»</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
         <div class=" col-xs-6 col-sm-6">
         <div class="box box-primary">
             <div class="box-header with-border">
