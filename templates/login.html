@@ -102,8 +102,7 @@ function login()
 			if(data=="1")
 			location.href = "../";
 			else{
-			$("#LoginWrong").html("Wrong Username or Password");
-			$("#LoginWrong").show();
+			alert("Wrong Username or Password!")
 			}
 			},
 			error: function () {
@@ -118,14 +117,16 @@ function login()
         var reg = /^\s*|\s*$/g;
         if (form.username.value.replace(reg,'') == "")
         {
-            document.getElementById("LoginWrong").innerHTML="No Username";
-	                $('.alert-error', $('.login-form')).show();
+            alert("No Username!")
+            //document.getElementById("LoginWrong").innerHTML="No Username";
+	          //      $('.alert-error', $('.login-form')).show();
             return false;
         }
         else if (form.password.value.replace(reg,'') == "")
         {
-            document.getElementById("LoginWrong").innerHTML="No Passwqord";
-	                $('.alert-error', $('.login-form')).show();
+            alert("No Password!")
+            //document.getElementById("LoginWrong").innerHTML="No Password";
+	          //      $('.alert-error', $('.login-form')).show();
             return false;
         }
         else

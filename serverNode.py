@@ -9,6 +9,7 @@ from multiprocessing import Process
 from flask import send_from_directory
 import model.datacenter as datacenter
 from model.user import User
+from model.workertask import WorkerTask
 import tarfile
 import xmlrpclib
 #init param
@@ -115,6 +116,22 @@ def upload_package_to_datacenter_code():
 # use it ,so you can delete it! :)
 #------------------------------------------------------------------------------
 
+@app.route('/data/package/list',methods=['GET'])
+def get_package_list():
+    l=[]
+    packages=datacenter.DataPackage.objects.all()
+    for package in packages:
+        l.append(package.get_json())
+    return json.dumps(l)
+
+
+@app.route('/data/script/list',methods=['GET'])
+def get_script_list():
+    l=[]
+    scripts=datacenter.WorkerScript.objects.all()
+    for script in scripts:
+        l.append(script.get_json())
+    return json.dumps(l)
 
 
 
@@ -154,6 +171,11 @@ def start_task():
     file_object.close( )
     task_server.add_worker(info['worker_name'],script)
     uuid=str(UUID.uuid1())
+    t=WorkerTask()
+    t.task_id=uuid
+    t.worker_name=info['worker_name']
+    t.script_code=info['script_code']
+    t.status='running'
     task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
     return ''
 
