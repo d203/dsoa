@@ -1,5 +1,5 @@
 from flask import Flask,request,session,g,redirect,url_for,abort,\
-    render_template,flash
+    render_template,flash,jsonify
 import os
 import json
 import redis
@@ -113,7 +113,7 @@ def get_package_list():
     packages=datacenter.DataPackage.objects.all()
     for package in packages:
         l.append(package.get_json())
-    return json.dumps(l)
+    return jsonify(l)
 
 
 @app.route('/data/script/list',methods=['GET'])
@@ -122,7 +122,7 @@ def get_script_list():
     scripts=datacenter.WorkerScript.objects.all()
     for script in scripts:
         l.append(script.get_json())
-    return json.dumps(l)
+    return jsonify(l)
 
 
 
