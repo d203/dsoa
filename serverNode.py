@@ -8,12 +8,33 @@ from model.Service import Service
 from multiprocessing import Process
 from flask import send_from_directory
 import model.datacenter as datacenter
+from model.user import User
 import tarfile
 import xmlrpclib
 #init param
 app=Flask (__name__)
 task_channel = 'taskBroadcast'
 global r
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method=='POST':
+        print 'a post'
+        u=request.form['username']
+        p=request.form['password']
+        user=User.objects.filter(username=u,password=p)
+        print u
+        print p
+        if len(user)==0:
+            return '0'
+        else:
+            user=user[0]
+            session['username']=user.username
+            print 'login success'
+            return '1'
+    else:
+        return '0'
+
 
 @app.route('/',methods=['GET'])
 def index():
@@ -86,6 +107,22 @@ def upload_package_to_datacenter_code():
 # use it ,so you can delete it! :)
 #------------------------------------------------------------------------------
 
+@app.route('/data/package/list',methods=['GET'])
+def get_package_list():
+    l=[]
+    packages=datacenter.DataPackage.objects.all()
+    for package in packages:
+        l.append(package.get_json())
+    return json.dumps(l)
+
+
+@app.route('/data/script/list',methods=['GET'])
+def get_script_list():
+    l=[]
+    scripts=datacenter.WorkerScript.objects.all()
+    for script in scripts:
+        l.append(script.get_json())
+    return json.dumps(l)
 
 
 
@@ -183,7 +220,7 @@ def main_process():
 if __name__=='__main__':
     r=redis.Redis(host='localhost',port=6379,db=0)
     app.debug=True
-
+    app.secret_key='dsoa_key'
     p = Process(target = main_process)
     p.start()
     app.run(port=8080)
