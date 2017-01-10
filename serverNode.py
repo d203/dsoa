@@ -7,7 +7,7 @@ import uuid as UUID
 from model.Service import Service
 from multiprocessing import Process
 from flask import send_from_directory
-import datacenter
+import model.datacenter as datacenter
 import tarfile
 import xmlrpclib
 #init param
