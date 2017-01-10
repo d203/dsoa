@@ -33,12 +33,20 @@ def login():
             print 'login success'
             return '1'
     else:
-        return '0'
+        return render_template('login.html')
 
+@app.route('/logout',methods=['GET'])
+def logout():
+    session['username']=''
+    return redirect('/login')
 
 @app.route('/',methods=['GET'])
 def index():
-    return render_template('AdminLTE-2.3.7/index.html')
+    print session
+    if not session['username']:
+        return redirect('/login')
+    else:
+        return render_template('AdminLTE-2.3.7/index.html')
 @app.route('/manage_worker',methods=['GET'])
 def start_worker():
     return render_template('AdminLTE-2.3.7/manage_worker.html')
