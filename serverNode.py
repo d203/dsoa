@@ -43,11 +43,11 @@ def logout():
 
 @app.route('/',methods=['GET'])
 def index():
-    print session
-    if not session['username']:
+    try:
+        if session['username']:
+            return render_template('AdminLTE-2.3.7/index.html')
+    except:
         return redirect('/login')
-    else:
-        return render_template('AdminLTE-2.3.7/index.html')
 @app.route('/manage_worker',methods=['GET'])
 def start_worker():
     return render_template('AdminLTE-2.3.7/manage_worker.html')
