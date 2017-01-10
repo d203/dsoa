@@ -34,12 +34,20 @@ def login():
             print 'login success'
             return '1'
     else:
-        return '0'
+        return render_template('login.html')
 
+@app.route('/logout',methods=['GET'])
+def logout():
+    session['username']=''
+    return redirect('/login')
 
 @app.route('/',methods=['GET'])
 def index():
-    return render_template('AdminLTE-2.3.7/index.html')
+    print session
+    if not session['username']:
+        return redirect('/login')
+    else:
+        return render_template('AdminLTE-2.3.7/index.html')
 @app.route('/manage_worker',methods=['GET'])
 def start_worker():
     return render_template('AdminLTE-2.3.7/manage_worker.html')
@@ -198,18 +206,32 @@ def get_task_list():
     tasks=WorkerTask.objects.all()
     for task in tasks:
         l.append(task.get_json())
-    return json.dumps(l)
+    return jsonify(l)
 
-@app.route('/task/output/<task_id>/list',methods=['GET'])
+@app.route("/task/<task_id>",methods=['GET'])
+def get_output_page(task_id):
+    if not session['username']:
+        return redirect('/login')
+    else:
+        return render_template('task_output_page.html',task_id=task_id)
+
+@app.route('/task/<task_id>/output/list',methods=['GET'])
 def get_output_list(task_id):
     l=[]
     for root,dir,files in os.walk('datacenter/data/output/'+task_id):
         for file in files:
             l.append(file)
-    return json.dumps(l)
-@app.route('/task/output/<task_id>/<file_name>',methods=['GET'])
+    return jsonify(l)
+
+@app.route('/task/<task_id>/info')
+def get_task_info(task_id):
+    task=WorkerTask.objects.filter(task_id=task_id)[0]
+    return task.get_json()
+
+@app.route('/task/<task_id>/output/<file_name>',methods=['GET'])
 def get_output_file(task_id,file_name):
     return send_from_directory('datacenter/data/output/'+task_id+'/',file_name)
+
 #divided data_package for distribute
 def unpack_output_data(package_name):
     #unpack_data
@@ -219,6 +241,7 @@ def unpack_output_data(package_name):
     for file_name in file_names:
         tar.extract(file_name,'datacenter/data/output/'+package_name[:-7]+'/')
     tar.close()
+
 
 
 
