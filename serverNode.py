@@ -198,7 +198,7 @@ def get_task_list():
     tasks=WorkerTask.objects.all()
     for task in tasks:
         l.append(task.get_json())
-    return json.dumps(l)
+    return jsonify(l)
 
 @app.route('/task/output/<task_id>/list',methods=['GET'])
 def get_output_list(task_id):
@@ -206,7 +206,7 @@ def get_output_list(task_id):
     for root,dir,files in os.walk('datacenter/data/output/'+task_id):
         for file in files:
             l.append(file)
-    return json.dumps(l)
+    return jsonify(l)
 @app.route('/task/output/<task_id>/<file_name>',methods=['GET'])
 def get_output_file(task_id,file_name):
     return send_from_directory('datacenter/data/output/'+task_id+'/',file_name)
