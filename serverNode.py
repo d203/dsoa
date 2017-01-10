@@ -107,6 +107,22 @@ def upload_package_to_datacenter_code():
 # use it ,so you can delete it! :)
 #------------------------------------------------------------------------------
 
+@app.route('/data/package/list',methods=['GET'])
+def get_package_list():
+    l=[]
+    packages=datacenter.DataPackage.objects.all()
+    for package in packages:
+        l.append(package.get_json())
+    return json.dumps(l)
+
+
+@app.route('/data/script/list',methods=['GET'])
+def get_script_list():
+    l=[]
+    scripts=datacenter.WorkerScript.objects.all()
+    for script in scripts:
+        l.append(script.get_json())
+    return json.dumps(l)
 
 
 
