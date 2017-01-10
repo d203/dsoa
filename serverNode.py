@@ -7,6 +7,7 @@ import uuid as UUID
 from model.Service import Service
 from multiprocessing import Process
 from flask import send_from_directory
+import datacenter
 import tarfile
 import xmlrpclib
 #init param
@@ -51,9 +52,14 @@ def wait():
 def upload_package_to_datacenter(filename):
     file = request.files['file']
     if file:
+        package=datacenter.DataPackage()
         if len(request.form['filename']) > 0:
+            package.package_name=request.form['filename']
             file.save(os.path.join('datacenter/data/package', request.form['filename']))
-        file.save(os.path.join('datacenter/data/package', file.filename))
+        else:
+            file.save(os.path.join('datacenter/data/package', file.filename))
+            package.package_name=file.filename
+        package.save()
         return 'upload done'
     return 'upload fail'
 #------------------------------------------------------------------------------
@@ -68,6 +74,9 @@ def upload_package_to_datacenter_code():
         file_object = open('datacenter/service/'+request.form['filename'], 'w')
         file_object.write(request.form['codes'])
         file_object.close()
+        worker_script=datacenter.WorkerScript()
+        worker_script.script_name=request.form['filename']
+        worker_script.save()
         return 'Upload code OK!'
     return 'Plead input filename'
 #------------------------------------------------------------------------------
@@ -79,33 +88,7 @@ def upload_package_to_datacenter_code():
 
 
 
-@app.route('/bootstrap/<s_path>')
-def static_path_bootstrap(s_path):
-    return redirect("/static/bootstrap/"+s_path)
 
-@app.route('/img/<s_path>')
-def static_path_img(s_path):
-    return redirect("/static/img/"+s_path)
-
-@app.route('/build/<s_path>')
-def static_path_build(s_path):
-    return redirect("/static/build/"+s_path)
-
-@app.route('/dist/img/<s_path>')
-def static_path_dist(s_path):
-    return redirect("/static/dist/img/"+s_path)
-
-@app.route('/documentation/<s_path>')
-def static_path_documentation(s_path):
-    return redirect("/static/documentation/"+s_path)
-
-@app.route('/pages/<s_path>')
-def static_path_pages(s_path):
-    return redirect("/static/pages/"+s_path)
-
-@app.route('/plugins/<s_path>')
-def static_path_plugins(s_path):
-    return redirect("/static/plugins/"+s_path)
 
 
 @app.route('/datacenter/<filename>',methods=['GET'])
@@ -118,6 +101,7 @@ def get_data_package(filename):
 def task_request():
     requestInfo=request.json
     service=Service.objects.filter(name=requestInfo['serviceName'])[-1]
+
     requestInfo['serviceUUID']=service.uuid
     requestInfo['taskID']=str(UUID.uuid1())
     if requestInfo['data_package']:
