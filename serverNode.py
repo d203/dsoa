@@ -9,6 +9,7 @@ from multiprocessing import Process
 from flask import send_from_directory
 import model.datacenter as datacenter
 from model.user import User
+from model.workertask import WorkerTask
 import tarfile
 import xmlrpclib
 #init param
@@ -162,6 +163,11 @@ def start_task():
     file_object.close( )
     task_server.add_worker(info['worker_name'],script)
     uuid=str(UUID.uuid1())
+    t=WorkerTask()
+    t.task_id=uuid
+    t.worker_name=info['worker_name']
+    t.script_code=info['script_code']
+    t.status='running'
     task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
     return ''
 
