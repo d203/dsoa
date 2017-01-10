@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>AdminLTE 2 | User Profile</title>
+  <title>AdminLTE 2 | Task Profile</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
@@ -497,12 +497,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        User Profile
+        Task Profile
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
         <li><a href="#">Examples</a></li>
-        <li class="active">User profile</li>
+        <li class="active">Task profile</li>
       </ol>
     </section>
 
@@ -513,68 +513,40 @@
         <div class="col-md-3">
 
           <!-- Profile Image -->
-          <div class="box box-primary">
-            <div class="box-body box-profile">
-              <img class="profile-user-img img-responsive img-circle" src="/static/dist/img/user4-128x128.jpg" alt="User profile picture">
 
-              <h3 class="profile-username text-center">Nina Mcintire</h3>
-
-              <p class="text-muted text-center">Software Engineer</p>
-
-              <ul class="list-group list-group-unbordered">
-                <li class="list-group-item">
-                  <b>Followers</b> <a class="pull-right">1,322</a>
-                </li>
-                <li class="list-group-item">
-                  <b>Following</b> <a class="pull-right">543</a>
-                </li>
-                <li class="list-group-item">
-                  <b>Friends</b> <a class="pull-right">13,287</a>
-                </li>
-              </ul>
-
-              <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
-            </div>
-            <!-- /.box-body -->
-          </div>
           <!-- /.box -->
 
           <!-- About Me Box -->
           <div class="box box-primary">
             <div class="box-header with-border">
-              <h3 class="box-title">About Me</h3>
+              <h3 class="box-title">About Task</h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <strong><i class="fa fa-book margin-r-5"></i> Education</strong>
+              <strong><i class="fa fa-book margin-r-5"></i> Basic Information</strong>
 
-              <p class="text-muted">
-                B.S. in Computer Science from the University of Tennessee at Knoxville
+              <p id="BasicInfo" >
+
+              </p>
+              <hr>
+
+              <strong><i class="fa fa-map-marker margin-r-5"></i> Status</strong>
+
+              <p align="center" id="Status" ></p >
+
+              <hr>
+
+              <strong><i class="fa fa-pencil margin-r-5"></i> Script_Code</strong>
+
+              <p id="Script_Code">
+
               </p>
 
               <hr>
 
-              <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
+              <strong><i class="fa fa-file-text-o margin-r-5"></i> File_Package</strong>
 
-              <p class="text-muted">Malibu, California</p>
-
-              <hr>
-
-              <strong><i class="fa fa-pencil margin-r-5"></i> Skills</strong>
-
-              <p>
-                <span class="label label-danger">UI Design</span>
-                <span class="label label-success">Coding</span>
-                <span class="label label-info">Javascript</span>
-                <span class="label label-warning">PHP</span>
-                <span class="label label-primary">Node.js</span>
-              </p>
-
-              <hr>
-
-              <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
-
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+              <p id="File_Package"></p >
             </div>
             <!-- /.box-body -->
           </div>
@@ -586,7 +558,7 @@
 
               <div class="timeline-item">
 
-                <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+                <h3 class="timeline-header"><a href="#">Task Image</a> the result of task</h3>
 
                 <div class="timeline-body" id="pic_table">
 
@@ -822,6 +794,32 @@
 <script>
  var message1='';
  var task_id = '{{ task_id }}';
+ $.ajax({
+
+        type: "GET",
+        url: "/task/"+task_id+"/info",
+    data:{
+    },
+        dataType: "json",
+        beforeSend: function() {},
+        success: function(data) {
+        msg='<br>Worker_Name:'+data.worker_name+'<br>Task_id:'+data.task_id.slice(0,8);
+        if(data.status=='done')
+        {
+        message2='<br><span class="label label-success">Done</span>';
+        }
+        else {
+          message2='<br><span class="label label-warning">Running</span>';
+        }
+        message3='<br>File_Name:'+data.script_code;
+        message4='<br>Data_Name:'+data.file_package;
+    $("#BasicInfo").html(msg);
+    $("#Status").html(message2);
+    $("#Script_Code").html(message3);
+    $("#File_Package").html(message4);
+  }
+});
+
 $.ajax({
 
        type: "GET",
@@ -833,11 +831,11 @@ $.ajax({
        success: function(data) {
    for(var i=0;i<data.length;i++)
    {
-     message1+='<img src="/task/80b77ca6-d753-11e6-aa4c-54271e27efc1/output/'+data[i] +'" width=400 height=225 alt="..." class="margin">'
+     message1+='<img src="/task/80b77ca6-d753-11e6-aa4c-54271e27efc1/output/'+data[i] +'" width=160 height=90alt="..." class="margin">'
    }
    $("#pic_table").html(message1);
  }
- })
+ });
 </script>
 
 </body>

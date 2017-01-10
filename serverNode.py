@@ -179,6 +179,7 @@ def start_task():
     t.worker_name=info['worker_name']
     t.script_code=info['script_code']
     t.status='running'
+    t.file_package=info['file_package']
     t.save()
     task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
     return 'OK'
