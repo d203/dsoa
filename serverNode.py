@@ -163,6 +163,7 @@ def get_data_service():
 @app.route('/task',methods=['POST'])
 def start_task():
     print 'a new task'
+    print request
     info=request.json
     print info
     service=dispatch_task(info['worker_name'])
@@ -179,7 +180,7 @@ def start_task():
     t.status='running'
     t.save()
     task_server.start_worker(info['worker_name'],uuid,info['worker_num'],[{"":""}],info['file_package'])
-    return ''
+    return 'OK'
 
 @app.route('/task/<task_id>/finished',methods=['POST'])
 def finish_task(task_id):

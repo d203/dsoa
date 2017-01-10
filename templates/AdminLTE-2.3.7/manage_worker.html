@@ -270,13 +270,17 @@
               <div class="col-md-6">
               	<div class="form-group">
               		<label for="name">选择数据包</label>
-              		<select class="form-control" id="worker_name" name="file_package">
+              		<select class="form-control" id="file_package" name="file_package">
                 			<option>2</option>
                 			<option>3</option>
                 			<option>4</option>
                 			<option>5</option>
               		</select>
                 </div>
+              </br>
+	            <label for="name">任务名称</label>
+              <input class="form-control" id="worker_name" name="worker_name" placeholder="请输入任务名称" type="text">
+              </br>
             	</div>
 
               <div class="col-md-6">
@@ -290,10 +294,14 @@
                 			<option>5</option>
               		</select>
                 </div>
+                </br>
+                <label for="name">工作流程</label>
+                <input class="form-control" id="worker_num" name="worker_num" placeholder="请输入工作流程" type="text">
+                </br>
             	</div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">关闭</button>
-                <button type="submit" class="btn btn-primary">生成</button>
+                <button type="button" class="btn btn-primary" onclick="handup()">生成</button>
               </div>
             </form>
           </div>
@@ -708,12 +716,13 @@
                    type : "GET",  //提交方式
                    url : "/data/package/list",//路径
                    success : function(result) {//返回数据根据结果进行相应的处理
-                           $("#worker_name").html("");
+                           $("#file_package").html("");
                            str1='['+result+']';
+                        //   alert(result);
                            var objs = eval ("(" + str1 + ")");
                            for (obj in objs)
                            {
-                             $("#worker_name").append("<option>"+ objs[obj].package_name +"</option>");
+                             $("#file_package").append("<option>"+ objs[obj].package_name +"</option>");
                            }
                    }
 
@@ -738,6 +747,43 @@
                 })
    });
 
+
+   function handup()
+   	{
+   	var worker_name = $("#worker_name").val();
+   	var script_code = $("#script_code").val();
+   	var file_package = $("#file_package").val();
+   	var worker_num = $("#worker_num").val();
+    var jsondata={"worker_name":worker_name,"script_code":script_code,"file_package":file_package,"worker_num":worker_num}
+   	$.ajax({
+
+   			type: "POST",
+   			url: "/task",
+        dataType:"json",
+        contentType:"application/json",
+        data:JSON.stringify(jsondata),
+   		// 	data:{
+   		// 	worker_name:worker_name,
+   		// 	script_code:script_code,
+   		// 	file_package:file_package,
+   		// 	worker_num:worker_num
+   		// 	},
+   			beforeSend: function() {},
+   			success: function(data) {
+   			if(data=="OK")
+        {
+          alert("ok");
+     			location.href = "../";
+        }
+   			else{
+     			alert("NO!");
+   			}
+   			},
+   			error: function () {
+                           alert("Ajax请求数据失败!headinfo");
+   			}
+   		});
+   	}
 </script>
 </body>
 </html>
