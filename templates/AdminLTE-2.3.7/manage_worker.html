@@ -30,6 +30,7 @@
   <!-- bootstrap wysihtml5 - text editor -->
   <link rel="stylesheet" href="static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 
+  <script src="static/plugins/jQuery/jquery-2.2.3.min.js"></script>
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -189,7 +190,7 @@
       <ul class="sidebar-menu">
         <li class="header">MAIN NAVIGATION</li>
         <li class="treeview">
-          <a href="#">
+          <a href="/">
             <i class="fa fa-dashboard"></i> <span>Index</span>
           </a>
         </li>
@@ -207,7 +208,7 @@
         <li class="active treeview">
           <a href="#">
             <i class="fa fa-pie-chart"></i>
-            <span>Manage projects</span>
+            <span>Manage worker</span>
           </a>
         </li>
         <li class="treeview">
@@ -251,6 +252,7 @@
       </section>
     </section>
     <section class="content">
+
       <!-- main content -->
     <div class="modal fade" id="start_new_worker">
         <div class="modal-dialog">
@@ -263,6 +265,33 @@
             <div class="modal-body">
               <p>请选择数据包与所用服务</p>
             </div>
+
+            <form role="form">
+              <div class="col-md-6">
+              	<div class="form-group">
+              		<label for="name">选择数据包</label>
+              		<select class="form-control" id="package_list">
+                			<option>2</option>
+                			<option>3</option>
+                			<option>4</option>
+                			<option>5</option>
+              		</select>
+                </div>
+            	</div>
+
+              <div class="col-md-6">
+              	<div class="form-group">
+              		<label for="name">选择服务</label>
+              		<select class="form-control" id="code_list">
+                			<option>1</option>
+                			<option>2</option>
+                			<option>3</option>
+                			<option>4</option>
+                			<option>5</option>
+              		</select>
+                </div>
+            	</div>
+            </form>
             <div class="modal-footer">
               <button type="button" class="btn btn-default pull-left" data-dismiss="modal">关闭</button>
               <button type="button" class="btn btn-primary">生成</button>
@@ -277,7 +306,7 @@
     <div class="col-md-7">
       <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">任务队列</h3>
+              <h3 class="box-title" id="test001">任务队列</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -360,7 +389,7 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer clearfix">
-              <button type="button" class="btn btn-sm btn-info btn-flat pull-left"  data-toggle="modal" data-target="#start_new_worker">开启新任务</a>
+              <button type="button" class="btn btn-sm btn-info btn-flat pull-left"  data-toggle="modal" data-target="#start_new_worker" onclick="loaddata()" id="button_start">开启新任务</a>
               <button href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
             </div>
             <!-- /.box-footer -->
@@ -635,7 +664,7 @@
 <!-- ./wrapper -->
 
 <!-- jQuery 2.2.3 -->
-<script src="static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+
 <!-- jQuery UI 1.11.4 -->
 <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
@@ -671,6 +700,49 @@
 <script src="static/dist/js/pages/dashboard.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="static/dist/js/demo.js"></script>
+<script type="text/javascript">
 
+ $("#package_list").click(
+   function(){
+     $.ajax({
+                   type : "GET",  //提交方式
+                   url : "/data/package/list",//路径
+                   success : function(result) {//返回数据根据结果进行相应的处理
+                           alert(result);
+                   }
+
+               })
+  });
+// function loaddata()
+// {
+// 	var xmlhttp;
+// 	if (window.XMLHttpRequest)
+// 	{
+// 		xmlhttp=new XMLHttpRequest();
+// 	}
+// 	else
+// 	{
+// 		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+// 	}
+// 	xmlhttp.onreadystatechange=function()
+// 	{
+// 		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+// 		{
+//       var obj = eval ("(" + xmlhttp.responseText + ")");
+//       window.alert(xmlhttp.responseText);
+//       string1 = "";
+//
+//       for (opt in obj)
+//       {
+//         string1=string1+"<option>"+opt.package_name+"</option>";
+//         window.alert(opt);
+//       }
+// 			document.getElementById("package_list").innerHTML=string1;
+// 		}
+// 	}
+// 	xmlhttp.open("GET","/data/package/list",true);
+// 	xmlhttp.send();
+// }
+</script>
 </body>
 </html>
